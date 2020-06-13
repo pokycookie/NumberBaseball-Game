@@ -1,0 +1,14 @@
+@import "./scss/login.scss";
+@import "./scss/reset.scss";
+@import "./scss/multiRoom.scss";
+
+body {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  background-color: $white;
+}
+
+.invisi {
+  display: none !important;
+}

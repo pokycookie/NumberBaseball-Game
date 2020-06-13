@@ -1,0 +1,12 @@
+.login
+    form.login__form
+        input(type="text", placeholder="Enter Your Nickname", autofocus).login__input
+        p.login__label (Press Enter To Join Game)
+    .login__mode
+        .mode__multi.modeArea
+            button(data-mode="0").modeBtn.mode__multi-2 Easy
+            button(data-mode="1").modeBtn.mode__multi-3 Normal
+            button(data-mode="2").modeBtn.mode__multi-4 Hard
+        .mode__single.modeArea
+            button(data-mode="3").modeBtn.mode__single-practice Practice
+            button(data-mode="4").modeBtn.mode__single-pve PvE
