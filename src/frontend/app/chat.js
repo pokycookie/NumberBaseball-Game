@@ -3,7 +3,7 @@ const chatInput = document.getElementById("chatInput");
 const chatUl = document.getElementById("chatUl");
 
 export const paintChat = (text, nickname, mode) => {
-  // mode 0: system, 1: self, 2: other
+  // mode 0: system, 1: self, 2: other, 3: error
   const chatLi = document.createElement("li");
   const chatNick = document.createElement("span");
   const chatText = document.createElement("span");
@@ -17,6 +17,8 @@ export const paintChat = (text, nickname, mode) => {
     chatLi.classList.add("chat__li--me");
   } else if (mode === 2) {
     chatLi.classList.add("chat__li--user");
+  } else if (mode === 3) {
+    chatLi.classList.add("chat__li--error");
   }
 
   chatLi.appendChild(chatNick);

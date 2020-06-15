@@ -24,9 +24,13 @@ const server = app.listen(PORT, () => console.log(`Listening on http://localhost
 const io = socketIO.listen(server);
 
 const easySpace = io.of("/easy");
+easySpace.room = {};
 
 // Easy Space
 easySpace.on("connection", (socket) => {
+  socket.settedData = false;
+  socket.lose = false;
+
   // Set Nickname
   socket.on("postNickname", ({ nickname }) => {
     socket.nickname = nickname;
@@ -46,30 +50,57 @@ easySpace.on("connection", (socket) => {
         .of("/easy")
         .in(ROOM)
         .clients((err, clients) => {
-          console.log("Wait me");
           clientIDs = [...clients];
         });
       clientIDs.forEach((ID) => {
         clientNicknames.push(CLIENTS.sockets[ID].nickname);
       });
-      if (clientIDs.length < 4) {
-        console.log(`${socket.nickname} - Room: ${ROOM} | ${clientNicknames}`);
-      } else {
+      if (!(ROOM in easySpace.room)) {
+        console.log("create Object");
+        easySpace.room[ROOM] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0 };
+      }
+      if (clientIDs.length >= 4 || easySpace.room[ROOM].roomStart === true) {
+        console.log("can't enter room", ROOM);
         ROOM += 1;
         clientIDs = [];
         clientNicknames = [];
-        console.log("next");
         getClients();
       }
     }
     const USER = clientIDs.length + 1;
     socket.join(ROOM);
     socket.room = ROOM;
-    socket.to(socket.room).broadcast.emit("getJoin", { nickname: socket.nickname, USER, ROOM });
-    socket.emit("postJoin", { nicknames: clientNicknames, USER, ROOM });
+    socket.to(socket.room).broadcast.emit("otherJoin", { nickname: socket.nickname, USER, ID: socket.id });
+    socket.emit("meJoin", { nicknames: clientNicknames, USER, IDs: clientIDs, ROOM });
+    easySpace.room[socket.room].users += 1;
     if (USER === 4) {
-      socket.emit("roomStart");
-      socket.to(socket.room).broadcast.emit("roomStart");
+      socket.emit("getRoomStart");
+      socket.to(socket.room).broadcast.emit("getRoomStart");
+      easySpace.room[socket.room].roomStart = true;
+      easySpace.room[socket.room].users = 4;
+    }
+    console.log(easySpace.room);
+  });
+
+  // Disconnecting
+  socket.on("disconnecting", () => {
+    try {
+      if (easySpace.room[socket.room].gameStart === true) {
+        io.of("/easy")
+          .in(socket.room)
+          .clients((err, clients) => {
+            if (clients.length > 1) {
+              console.log("I will LEAVE!!!");
+              let nextID = clients[clients.findIndex((element) => element === socket.id) + 1];
+              if (typeof nextID === "undefined") {
+                nextID = clients[0];
+              }
+              io.of("/easy").connected[nextID].emit("getTurn");
+            }
+          });
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
 
@@ -77,7 +108,7 @@ easySpace.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     const ROOM = socket.room;
     let clientIDs = [];
-    let clientNicknames = [];
+    let clientDatas = {};
 
     const CLIENTS = await io
       .of("/easy")
@@ -86,21 +117,106 @@ easySpace.on("connection", (socket) => {
         clientIDs = [...clients];
       });
     clientIDs.forEach((ID) => {
-      clientNicknames.push(CLIENTS.sockets[ID].nickname);
+      clientDatas[ID] = CLIENTS.sockets[ID].nickname;
     });
+    try {
+      if (socket.settedData === true) {
+        easySpace.room[socket.room].settedData -= 1;
+      }
+      easySpace.room[socket.room].users -= 1;
+      if (easySpace.room[socket.room].users === 0) {
+        easySpace.room[socket.room] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0 };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(easySpace.room);
     const USER = clientIDs.length;
-    socket.to(ROOM).broadcast.emit("getLeave", { nickname: socket.nickname, USER, clientNicknames });
+    socket.to(ROOM).broadcast.emit("getLeave", { nickname: socket.nickname, USER, clientDatas, clientIDs });
+    if (easySpace.room[socket.room].settedData === easySpace.room[socket.room].users && easySpace.room[socket.room].gameStart === false) {
+      startGame();
+    }
+  });
+
+  // User Ready
+  socket.on("ready", () => {
+    easySpace.room[socket.room].ready += 1;
+    if (easySpace.room[socket.room].ready > 4) {
+      easySpace.room[socket.room].ready = 4;
+    }
+    if (easySpace.room[socket.room].users >= 2) {
+      if (easySpace.room[socket.room].ready === easySpace.room[socket.room].users) {
+        socket.emit("getRoomStart");
+        socket.to(socket.room).broadcast.emit("getRoomStart");
+        easySpace.room[socket.room].roomStart = true;
+      }
+    }
+    console.log(easySpace.room);
+  });
+  socket.on("notReady", () => {
+    easySpace.room[socket.room].ready -= 1;
+    if (easySpace.room[socket.room].ready < 0) {
+      easySpace.room[socket.room].ready = 0;
+    }
+    console.log(easySpace.room);
+  });
+
+  // User Set Data
+  socket.on("postSetDataDone", async () => {
+    easySpace.room[socket.room].settedData += 1;
+    socket.settedData = true;
+    if (easySpace.room[socket.room].settedData === easySpace.room[socket.room].users) {
+      startGame();
+    }
+    console.log(easySpace.room);
+  });
+
+  // Start Game
+  function startGame() {
+    easySpace.room[socket.room].gameStart = true;
+    socket.emit("getGameStart");
+    socket.to(socket.room).broadcast.emit("getGameStart");
+    io.of("/easy")
+      .in(socket.room)
+      .clients((err, clients) => {
+        if (clients.length > 0) {
+          io.of("/easy").connected[clients[0]].emit("getTurn");
+        }
+      });
+  }
+
+  // Turn
+  socket.on("postOtherTurn", (ID) => {
+    socket.to(socket.room).broadcast.emit("getOtherTurn", ID);
   });
 
   // Chat Broadcast
   socket.on("postChat", ({ chat }) => {
-    const ROOM = socket.room;
-    socket.to(ROOM).broadcast.emit("getChat", { chat, nickname: socket.nickname });
+    socket.to(socket.room).broadcast.emit("getChat", { chat, nickname: socket.nickname });
   });
 
   // Data Broadcast
-  socket.on("postData", ({ dataArr, nickname }) => {
-    const ROOM = socket.room;
-    socket.to(ROOM).broadcast.emit("getData", { dataArr, nickname });
+  socket.on("postData", ({ dataArr, nickname, ID }) => {
+    socket.to(socket.room).broadcast.emit("getData", { dataArr, nickname });
+    try {
+      io.of("/easy")
+        .in(socket.room)
+        .clients((err, clients) => {
+          if (clients.length > 0) {
+            let nextID = clients[clients.findIndex((element) => element === ID) + 1];
+            if (typeof nextID === "undefined") {
+              nextID = clients[0];
+            }
+            io.of("/easy").connected[nextID].emit("getTurn");
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  // Checked Data Broadcast
+  socket.on("postCheckedData", ({ DATA, dataArr }) => {
+    socket.to(socket.room).broadcast.emit("getCheckedData", { DATA, dataArr, ID: socket.id });
   });
 });

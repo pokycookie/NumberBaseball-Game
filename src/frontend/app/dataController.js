@@ -1,5 +1,30 @@
 const dataSettingArea = document.querySelector(".dataSetting");
 
+export const checkingData = (dataArr, MAX, socketData) => {
+  let S = 0;
+  let B = 0;
+  let DATA;
+  for (let i = 0; i < MAX; i++) {
+    if (socketData[i] == dataArr[i]) {
+      S += 1;
+    } else {
+      for (let j = 0; j < MAX; j++) {
+        if (socketData[j] == dataArr[i]) {
+          B += 1;
+        }
+      }
+    }
+  }
+  if (S === 0 && B === 0) {
+    DATA = "OUT";
+  } else if (S === MAX) {
+    DATA = "WIN";
+  } else {
+    DATA = `${S}S ${B}B`;
+  }
+  return DATA;
+};
+
 export const validateValue = () => {
   let valid = true;
   const attackBtn = document.querySelector(".attackBtn");

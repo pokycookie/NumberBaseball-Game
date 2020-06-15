@@ -1,10 +1,11 @@
 .multiRoom.invisi
     .title
-        .title--left
+        .title--info
             span.roomName Easy | 1
-            span.roomInfo (3/4)
-        .title--right
-            span.roomStatus Waiting for another player/Game has been started
+            span.roomStatus Waiting for another player (3/4) / Game has been started
+        .title--nickname
+            span.userNickname Nickname
+            span.userNumber | Undetermined yet
     .contents
         .nav1
             //- .userArea.user1
@@ -35,8 +36,9 @@
                         //-     button.downBtn
                         //-         i(class="fas fa-angle-down")
                     .attackBtnArea
-                        button.attackBtn
-                            i(class="fas fa-baseball-ball")
+                        button.attackBtn.readyBtn
+                            span READY
+                            //- i(class="fas fa-baseball-ball")
         .nav2
             //- .userArea.user3
             .chat

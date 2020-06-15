@@ -1,4 +1,4 @@
-export const createUser = (users, NICKNAME) => {
+export const createUser = (users, NICKNAME, ID) => {
   const userArea = document.createElement("div");
   const title = document.createElement("div");
   const nickname = document.createElement("div");
@@ -9,7 +9,7 @@ export const createUser = (users, NICKNAME) => {
 
   userArea.classList.add("userArea");
   userArea.classList.add(`user${users - 1}`);
-  userArea.setAttribute("data-name", NICKNAME);
+  userArea.setAttribute("data-id", ID);
   title.classList.add("user__title");
   nickname.classList.add("user__nickname");
   nicknameSpan.classList.add("user__nickname-span");
@@ -38,4 +38,20 @@ export const createUser = (users, NICKNAME) => {
 export const deleteUser = () => {
   const userAreas = document.querySelectorAll(".userArea");
   userAreas.forEach((element) => element.remove());
+};
+
+export const paintUserBoard = (DATA, dataArr, ID) => {
+  const userArea = document.querySelector(`.userArea[data-id="${ID}"]`);
+  const userBoardUl = userArea.lastChild.firstChild;
+
+  const li = document.createElement("li");
+  const numSpan = document.createElement("span");
+  const dataSpan = document.createElement("span");
+
+  numSpan.innerText = dataArr.join("");
+  dataSpan.innerText = DATA;
+
+  li.appendChild(numSpan);
+  li.appendChild(dataSpan);
+  userBoardUl.appendChild(li);
 };
