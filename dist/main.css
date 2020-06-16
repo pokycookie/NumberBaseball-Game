@@ -1,0 +1,473 @@
+.login {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  .login .login__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; }
+    .login .login__form .login__input {
+      text-align: center;
+      width: 250px;
+      height: 40px;
+      font-size: 25px;
+      font-weight: 600;
+      padding: 3px 6px;
+      color: #222831;
+      border: 2px solid #222831;
+      border-radius: 2px; }
+      .login .login__form .login__input:focus {
+        outline: none; }
+    .login .login__form .login__label {
+      color: #222831;
+      margin-top: 5px;
+      font-size: 10px; }
+  .login .login__mode {
+    width: 300px;
+    position: fixed;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; }
+    .login .login__mode .modeArea {
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      .login .login__mode .modeArea button {
+        width: 70px;
+        height: 30px;
+        margin: 5px 2px;
+        border: 2px solid #222831;
+        border-radius: 2px;
+        color: #222831;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer; }
+        .login .login__mode .modeArea button:hover {
+          border: 2px solid #00adb5;
+          color: #00adb5; }
+        .login .login__mode .modeArea button:focus {
+          outline: none; }
+      .login .login__mode .modeArea button.checked {
+        border: 2px solid #00adb5;
+        color: #00adb5; }
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol,
+ul {
+  list-style: none; }
+
+blockquote,
+q {
+  quotes: none; }
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+.multiRoom {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center; }
+  .multiRoom .title {
+    box-sizing: border-box;
+    width: 100%;
+    height: 50px;
+    background-color: #222831;
+    color: white;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #00adb5; }
+    .multiRoom .title span {
+      margin: 0px 5px; }
+    .multiRoom .title .title--info {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center; }
+      .multiRoom .title .title--info .roomName {
+        font-size: 15px;
+        font-weight: 600; }
+      .multiRoom .title .title--info .roomStatus {
+        color: #f08a5d;
+        font-size: 10px; }
+    .multiRoom .title .title--nickname {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center; }
+      .multiRoom .title .title--nickname .userNickname {
+        color: #00adb5;
+        font-size: 15px;
+        font-weight: 600; }
+      .multiRoom .title .title--nickname .userNumber {
+        color: white;
+        font-size: 15px;
+        font-weight: 600; }
+  .multiRoom .contents {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start; }
+    .multiRoom .contents .userArea.turn .user__title {
+      background-color: #00adb5; }
+    .multiRoom .contents .userArea {
+      overflow: hidden;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center; }
+      .multiRoom .contents .userArea .user__title {
+        box-sizing: border-box;
+        padding: 10px;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #393e46; }
+        .multiRoom .contents .userArea .user__title .user__nickname {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center; }
+          .multiRoom .contents .userArea .user__title .user__nickname .user__nickname-span {
+            font-size: 15px;
+            font-weight: 600;
+            color: white; }
+      .multiRoom .contents .userArea .user__board {
+        overflow: hidden;
+        width: 100%;
+        height: calc(100% - 50px); }
+        .multiRoom .contents .userArea .user__board .user__board-ul {
+          width: 100%;
+          height: 100%;
+          overflow: auto; }
+          .multiRoom .contents .userArea .user__board .user__board-ul li {
+            margin: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; }
+            .multiRoom .contents .userArea .user__board .user__board-ul li span {
+              color: white;
+              font-size: 12px; }
+    .multiRoom .contents .nav1 {
+      flex: 2;
+      height: 100%;
+      background-color: #222831;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center; }
+    .multiRoom .contents .main {
+      flex: 5;
+      height: 100%;
+      display: flex;
+      flex-direction: column; }
+      .multiRoom .contents .main .mainBoard {
+        width: 100%;
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center; }
+      .multiRoom .contents .main .mainController {
+        width: 100%;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .multiRoom .contents .main .mainController .mainController__main {
+          width: 250px;
+          height: 150px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center; }
+          .multiRoom .contents .main .mainController .mainController__main .dataSetting {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
+            .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-evenly;
+              align-items: center; }
+              .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item .dataDiv {
+                width: 30px;
+                height: 30px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #222831; }
+                .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item .dataDiv span {
+                  color: white; }
+                .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item .dataDiv span.invalid {
+                  color: #f08a5d; }
+              .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item button {
+                border: none;
+                color: white;
+                background-color: #393e46;
+                width: 30px;
+                height: 20px;
+                cursor: pointer; }
+                .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item button:hover {
+                  background-color: #00adb5; }
+                .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item button:focus {
+                  outline: none; }
+              .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item button.invalid {
+                color: #f08a5d; }
+                .multiRoom .contents .main .mainController .mainController__main .dataSetting .data__item button.invalid:hover {
+                  background-color: black; }
+          .multiRoom .contents .main .mainController .mainController__main .attackBtnArea {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn {
+              box-sizing: border-box;
+              width: 100%;
+              height: 50px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              border: none;
+              background-color: #393e46;
+              color: white;
+              font-size: 30px;
+              cursor: pointer; }
+              .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn:hover {
+                background-color: #00adb5; }
+              .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn:focus {
+                outline: none; }
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.invalid {
+              background-color: #393e46;
+              color: #f08a5d; }
+              .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.invalid:hover {
+                background-color: #222831; }
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.readyBtn,
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.invalid.readyBtn {
+              color: #222831; }
+              .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.readyBtn:hover,
+              .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.invalid.readyBtn:hover {
+                color: #00adb5;
+                background-color: #222831; }
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.readyBtn.ready,
+            .multiRoom .contents .main .mainController .mainController__main .attackBtnArea .attackBtn.invalid.readyBtn.ready {
+              color: #00adb5;
+              background-color: #222831;
+              border: 2px solid #00adb5; }
+    .multiRoom .contents .nav2 {
+      overflow: hidden;
+      flex: 2;
+      height: 100%;
+      background-color: #222831;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center; }
+      .multiRoom .contents .nav2 .chat {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center; }
+        .multiRoom .contents .nav2 .chat .chatBoard {
+          overflow: hidden;
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
+          padding: 5px 2px;
+          background-color: #393e46;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          align-items: center; }
+          .multiRoom .contents .nav2 .chat .chatBoard .chat__li--system {
+            color: #f08a5d; }
+          .multiRoom .contents .nav2 .chat .chatBoard .chat__li--me {
+            color: #00adb5; }
+          .multiRoom .contents .nav2 .chat .chatBoard .chat__li--user {
+            color: white; }
+          .multiRoom .contents .nav2 .chat .chatBoard .chat__li--error {
+            color: #ff2e63; }
+          .multiRoom .contents .nav2 .chat .chatBoard li {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 0px 5px;
+            margin: 5px 0px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            font-size: 12px; }
+            .multiRoom .contents .nav2 .chat .chatBoard li span:first-child {
+              margin-right: 5px; }
+            .multiRoom .contents .nav2 .chat .chatBoard li span:last-child {
+              word-break: break-all; }
+        .multiRoom .contents .nav2 .chat .chatInput {
+          width: 100%;
+          height: 25px; }
+          .multiRoom .contents .nav2 .chat .chatInput form {
+            width: 100%;
+            height: 100%;
+            display: flex; }
+            .multiRoom .contents .nav2 .chat .chatInput form .chatInput-text {
+              box-sizing: border-box;
+              width: 100%;
+              height: 100%;
+              border: none;
+              padding-left: 5px; }
+              .multiRoom .contents .nav2 .chat .chatInput form .chatInput-text:focus {
+                outline: none; }
+            .multiRoom .contents .nav2 .chat .chatInput form .chatInput-btn {
+              width: 50px;
+              height: 100%;
+              border: none;
+              background-color: #00adb5;
+              color: white;
+              cursor: pointer; }
+              .multiRoom .contents .nav2 .chat .chatInput form .chatInput-btn:focus {
+                outline: none; }
+
+body {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  background-color: #eeeeee; }
+
+.invisi {
+  display: none !important; }
+
