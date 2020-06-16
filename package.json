@@ -4,7 +4,8 @@
   "description": "Online NumberBaseball Game",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec node dist/main.js",
+    "start": "node dist/main.js",
+    "dev:server": "nodemon --exec node dist/main.js",
     "dev:webpack": "cross-env WEBPACK_MODE=development webpack -w",
     "prod:webpack": "corss-env WEBPACK_MODE=production webpack"
   },
