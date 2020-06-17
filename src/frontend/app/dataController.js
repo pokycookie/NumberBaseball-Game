@@ -18,7 +18,7 @@ export const checkingData = (dataArr, MAX, socketData) => {
   if (S === 0 && B === 0) {
     DATA = "OUT";
   } else if (S === MAX) {
-    DATA = "WIN";
+    DATA = "Correct";
   } else {
     DATA = `${S}S ${B}B`;
   }

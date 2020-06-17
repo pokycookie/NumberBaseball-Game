@@ -7,7 +7,7 @@
     "start": "node dist/main.js",
     "start:dev": "nodemon --exec node dist/main.js",
     "webpack:dev": "cross-env WEBPACK_MODE=development webpack -w",
-    "webpack:pro": "corss-env WEBPACK_MODE=production webpack"
+    "webpack:pro": "cross-env WEBPACK_MODE=production webpack"
   },
   "repository": {
     "type": "git",

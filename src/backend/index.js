@@ -57,7 +57,7 @@ easySpace.on("connection", (socket) => {
       });
       if (!(ROOM in easySpace.room)) {
         console.log("create Object");
-        easySpace.room[ROOM] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0 };
+        easySpace.room[ROOM] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0, lose: 0 };
       }
       if (clientIDs.length >= 4 || easySpace.room[ROOM].roomStart === true) {
         console.log("can't enter room", ROOM);
@@ -119,23 +119,37 @@ easySpace.on("connection", (socket) => {
     clientIDs.forEach((ID) => {
       clientDatas[ID] = CLIENTS.sockets[ID].nickname;
     });
+
+    const USER = clientIDs.length;
+    socket.to(ROOM).broadcast.emit("getLeave", { nickname: socket.nickname, USER, clientDatas, clientIDs });
+
     try {
+      if (socket.lose === true) {
+        easySpace.room[socket.room].lose -= 1;
+      }
       if (socket.settedData === true) {
         easySpace.room[socket.room].settedData -= 1;
       }
+      if (easySpace.room[socket.room].settedData === easySpace.room[socket.room].users && easySpace.room[socket.room].gameStart === false) {
+        startGame();
+      }
       easySpace.room[socket.room].users -= 1;
+      if (easySpace.room[socket.room].users === easySpace.room[socket.room].lose + 1 && easySpace.room[socket.room].roomStart === true) {
+        const winner = clientIDs.filter((element) => io.of("/easy").connected[element].lose === false);
+        io.of("/easy").connected[winner[0]].emit("getWin");
+      }
       if (easySpace.room[socket.room].users === 0) {
-        easySpace.room[socket.room] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0 };
+        easySpace.room[socket.room] = { roomStart: false, gameStart: false, users: 0, settedData: 0, ready: 0, lose: 0 };
       }
     } catch (error) {
       console.log(error);
     }
     console.log(easySpace.room);
-    const USER = clientIDs.length;
-    socket.to(ROOM).broadcast.emit("getLeave", { nickname: socket.nickname, USER, clientDatas, clientIDs });
-    if (easySpace.room[socket.room].settedData === easySpace.room[socket.room].users && easySpace.room[socket.room].gameStart === false) {
-      startGame();
-    }
+  });
+
+  // Close Game
+  socket.on("postCloseGame", () => {
+    io.of("/easy").to(socket.room).emit("getCloseGame");
   });
 
   // User Ready
@@ -190,6 +204,25 @@ easySpace.on("connection", (socket) => {
     socket.to(socket.room).broadcast.emit("getOtherTurn", ID);
   });
 
+  // Post Lose
+  socket.on("postLose", (ID) => {
+    easySpace.room[socket.room].lose += 1;
+    console.log(easySpace.room);
+    socket.lose = true;
+    const nickname = io.of("/easy").in(socket.room).clients().sockets[ID].nickname;
+    socket.to(socket.room).broadcast.emit("getLose", { ID, nickname });
+    if (easySpace.room[socket.room].lose + 1 === easySpace.room[socket.room].users) {
+      io.of("/easy")
+        .in(socket.room)
+        .clients((err, clients) => {
+          const winner = clients.filter((id) => io.of("/easy").connected[id].lose === false);
+          io.of("/easy").connected[winner].emit("getWin");
+          const nickname = io.of("/easy").in(socket.room).clients().sockets[winner].nickname;
+          socket.to(socket.room).broadcast.emit("otherWin", { ID: winner, nickname });
+        });
+    }
+  });
+
   // Chat Broadcast
   socket.on("postChat", ({ chat }) => {
     socket.to(socket.room).broadcast.emit("getChat", { chat, nickname: socket.nickname });
@@ -197,7 +230,9 @@ easySpace.on("connection", (socket) => {
 
   // Data Broadcast
   socket.on("postData", ({ dataArr, nickname, ID }) => {
-    socket.to(socket.room).broadcast.emit("getData", { dataArr, nickname });
+    if (dataArr !== "LOSE") {
+      socket.to(socket.room).broadcast.emit("getData", { dataArr, nickname });
+    }
     try {
       io.of("/easy")
         .in(socket.room)

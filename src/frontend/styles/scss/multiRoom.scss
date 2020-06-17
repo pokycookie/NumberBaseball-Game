@@ -57,6 +57,12 @@
     display: flex;
     justify-content: space-evenly;
     align-items: flex-start;
+    .userArea.LOSE,
+    .userArea.turn.LOSE {
+      .user__title {
+        background-color: $orange;
+      }
+    }
     .userArea.turn {
       .user__title {
         background-color: $blue;
@@ -229,6 +235,14 @@
               background-color: $gray;
               color: $orange;
               &:hover {
+                background-color: $black;
+              }
+            }
+            .attackBtn.inactive,
+            .attackBtn.inactive.invalid {
+              color: $black;
+              &:hover {
+                color: $orange;
                 background-color: $black;
               }
             }

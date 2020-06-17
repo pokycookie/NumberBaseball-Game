@@ -2,6 +2,7 @@
 import { chatApp, paintChat } from "./chat";
 import { createUser, deleteUser, paintUserBoard } from "./user";
 import { checkingData } from "./dataController";
+import { paintInfo } from "./modal";
 
 let socket;
 let roomUsers = 1;
@@ -9,6 +10,8 @@ let attackMode = 0;
 let myTurn = false;
 let roomStart = false;
 let gameStart = false;
+let lose = false;
+let closeGame = false;
 
 export const socketApp = (MODE) => {
   switch (parseInt(MODE)) {
@@ -36,6 +39,7 @@ export const socketApp = (MODE) => {
     paintRoomStatus(USER);
     paintUserNickname();
     paintChat(`Welcome to join this game`, "system", 0);
+    paintInfo("Welcome to join this game", 0);
   });
 
   // Someone Join
@@ -43,6 +47,7 @@ export const socketApp = (MODE) => {
     createUser(USER, nickname, ID);
     paintRoomStatus(USER);
     paintChat(`[${nickname}] joined this game`, "system", 0);
+    paintInfo(`[${nickname}] joined this game`, 0);
   });
 
   // Someone Leave
@@ -58,6 +63,7 @@ export const socketApp = (MODE) => {
     }
     paintRoomStatus(USER);
     paintChat(`[${nickname}] leaved this game`, "system", 0);
+    paintInfo(`[${nickname}] leaved this game`, 0);
   });
 
   // Room Start
@@ -73,6 +79,8 @@ export const socketApp = (MODE) => {
     btn.innerHTML = `<i class="fas fa-baseball-ball"></i>`;
     paintChat("Game Start", "system", 0);
     paintChat(`Please set up your number`, "system", 0);
+    paintInfo(`Game Start`, 0);
+    paintInfo(`Please set up your number`, 0);
     paintRoomStatus(roomUsers);
   });
 
@@ -81,23 +89,37 @@ export const socketApp = (MODE) => {
     gameStart = true;
     paintChat("All player has set a number", "system", 0);
     paintRoomStatus(roomUsers);
+    paintInfo("All player has set a number", 0);
   });
 
   // Get Turn
   socket.on("getTurn", () => {
-    myTurn = true;
-    paintChat("It's your turn", "system", 0);
-    socket.emit("postOtherTurn", socket.id);
-    const userAreas = document.querySelectorAll(".userArea");
-    userAreas.forEach((element) => {
-      if (element.classList.contains("turn")) {
-        element.classList.remove("turn");
+    if (lose === false) {
+      myTurn = true;
+      paintChat("It's your turn", "system", 0);
+      socket.emit("postOtherTurn", socket.id);
+      const userAreas = document.querySelectorAll(".userArea");
+      userAreas.forEach((element) => {
+        if (element.classList.contains("turn")) {
+          element.classList.remove("turn");
+        }
+      });
+      const attackBtn = document.querySelector(".attackBtn");
+      if (attackBtn.classList.contains("inactive")) {
+        attackBtn.classList.remove("inactive");
       }
-    });
+      paintInfo(`It's your turn`, 0);
+    } else {
+      socket.emit("postData", { dataArr: "LOSE", nickname: socket.nickname, ID: socket.id });
+    }
   });
   socket.on("getOtherTurn", (ID) => {
     const userAreas = document.querySelectorAll(".userArea");
     const userArea = document.querySelector(`.userArea[data-id="${ID}"]`);
+    const attackBtn = document.querySelector(".attackBtn");
+    if (!attackBtn.classList.contains("inactive")) {
+      attackBtn.classList.add("inactive");
+    }
     userAreas.forEach((element) => {
       if (element.classList.contains("turn")) {
         element.classList.remove("turn");
@@ -110,8 +132,16 @@ export const socketApp = (MODE) => {
   socket.on("getData", ({ dataArr, nickname }) => {
     paintChat(`[${dataArr}]`, nickname, 0);
     const DATA = checkingData(dataArr, parseInt(MODE) + 3, socket.numData);
-    socket.emit("postChat", { chat: DATA });
-    socket.emit("postCheckedData", { DATA, dataArr });
+    if (lose === false) {
+      socket.emit("postChat", { chat: DATA });
+      socket.emit("postCheckedData", { DATA, dataArr });
+      if (DATA === "Correct") {
+        socket.emit("postLose", socket.id);
+        paintChat("YOU LOSE", "system", 0);
+        paintInfo(`YOU LOSE`, 1);
+        lose = true;
+      }
+    }
   });
 
   // Attack
@@ -126,6 +156,32 @@ export const socketApp = (MODE) => {
     paintUserBoard(DATA, dataArr, ID);
   });
 
+  // Get Win
+  socket.on("getWin", () => {
+    paintChat("YOU WIN", "system", 0);
+    paintInfo(`You WIN`, 0);
+    socket.emit("postCloseGame");
+  });
+
+  // Other Win
+  socket.on("otherWin", ({ ID, nickname }) => {
+    paintChat(`[${nickname}] is winner`, "system", 0);
+    paintInfo(`[${nickname}] is winner`, 1);
+  });
+
+  // Get Lose
+  socket.on("getLose", ({ ID, nickname }) => {
+    paintChat(`[${nickname}] has been defeated`, "system", 0);
+    const userArea = document.querySelector(`.userArea[data-id="${ID}"]`);
+    userArea.classList.add("LOSE");
+    paintInfo(`[${nickname}] has been defeated`, 1);
+  });
+
+  // Close Game
+  socket.on("getCloseGame", () => {
+    closeGame = true;
+  });
+
   // Chat
   socket.on("getChat", ({ chat, nickname }) => {
     paintChat(chat, nickname, 2);
@@ -133,6 +189,8 @@ export const socketApp = (MODE) => {
 
   Chat();
 };
+
+//--- function ---
 
 // Set Nickname
 function Nickname() {
@@ -198,14 +256,21 @@ function handleAttack(mode) {
   });
 
   // Attack MODE
+  if (closeGame === true) {
+    paintChat("Game has been closed", "system", 3);
+    paintInfo(`Game has been closed`, 2);
+    return;
+  }
   if (roomStart === true) {
     if (valid === false) {
       paintChat("Invalid Value", "system", 3);
+      paintInfo(`Invalid Value`, 2);
     } else {
       if (mode === 0) {
         socket.numData = dataArr;
         socket.emit("postSetDataDone");
         paintChat("Your number has been set up successfully", "system", 0);
+        paintInfo(`Your number has been set up successfully`, 0);
         paintUserNumber();
         attackMode = 1;
       } else {
@@ -216,9 +281,11 @@ function handleAttack(mode) {
             myTurn = false;
           } else {
             paintChat("It's not your turn", "system", 3);
+            paintInfo(`It's not your turn`, 2);
           }
         } else {
           paintChat("Someone didn't set number yet", "system", 3);
+          paintInfo(`Someone didn't set number yet`, 2);
         }
       }
     }

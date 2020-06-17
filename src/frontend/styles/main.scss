@@ -12,3 +12,30 @@ body {
 .invisi {
   display: none !important;
 }
+
+.info-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  color: $white;
+  li {
+    margin-top: 3px;
+    padding: 15px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    &.good {
+      background-color: $blue;
+    }
+    &.error {
+      background-color: $red;
+    }
+    &.bad {
+      background-color: $orange;
+    }
+  }
+}
